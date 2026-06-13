@@ -1,0 +1,115 @@
+
+
+-- [[ TOUCH TO FALL (KILL AURA STYLE) ]] --
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local Toggled = false
+
+-- === СОЗДАНИЕ GUI ===
+
+local ScreenGui = Instance.new("ScreenGui")
+pcall(function() ScreenGui.Parent = game:GetService("CoreGui") end)
+if ScreenGui.Parent ~= game:GetService("CoreGui") then ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+
+local Button = Instance.new("TextButton")
+Button.Size = UDim2.new(0, 150, 0, 50)
+Button.Position = UDim2.new(0, 50, 0.7, 0)
+Button.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+Button.Text = "Touch Fall: OFF"
+Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+Button.Font = Enum.Font.SourceSansBold
+Button.TextSize = 20
+Button.Parent = ScreenGui
+
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 8)
+Corner.Parent = Button
+
+-- === ЛОГИКА ===
+
+-- Функция, которая пытается "уронить" игрока
+
+local function tripPlayer(targetChar)
+    local humanoid = targetChar:FindFirstChildOfClass("Humanoid")
+    local hrp = targetChar:FindFirstChild("HumanoidRootPart")
+    
+    if humanoid and hrp then
+        -- Способ 1: Заставить персонажа сесть (самый эффективный для падения)
+        humanoid.Sit = true
+        
+        -- Способ 2: Дать импульс вверх/вниз, чтобы он потерял равновесие
+        hrp.Velocity = Vector3.new(0, 50, 0) 
+        
+        -- Способ 3: Отключить физику (если позволяет эксплойт)
+        -- humanoid.PlatformStand = true
+    end
+end
+
+-- Цикл проверки касания
+
+RunService.Stepped:Connect(function()
+    if not Toggled then return end
+    
+    local char = LocalPlayer.Character
+    if not char then return end
+    local myHRP = char:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return end
+
+    -- Перебираем всех игроков
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local targetChar = player.Character
+            local targetHRP = targetChar:FindFirstChild("HumanoidRootPart") 
+            if targetHRP then
+                -- Проверяем расстояние (имитация касания)
+                -- Если ты подошел очень близко, скрипт сработает
+                local distance = (myHRP.Position - targetHRP.Position).Magnitude
+                
+                if distance < 4 then -- 4 студа - это радиус касания
+                    tripPlayer(targetChar)
+                end
+            end
+        end
+    end
+end)
+
+-- === ПЕРЕКЛЮЧАТЕЛЬ ===
+
+Button.MouseButton1Click:Connect(function()
+    Toggled = not Toggled
+    if Toggled then
+        Button.Text = "Touch Fall: ON"
+        Button.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    else
+        Button.Text = "Touch Fall: OFF"
+        Button.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+    end
+end 
+            if targetHRP then
+                -- Проверяем расстояние (имитация касания)
+                -- Если ты подошел очень близко, скрипт сработает
+                local distance = (myHRP.Position - targetHRP.Position).Magnitude
+                
+                if distance < 4 then -- 4 студа - это радиус касания
+                    tripPlayer(targetChar)
+                end
+            end
+        end
+    end
+end)
+
+-- === ПЕРЕКЛЮЧАТЕЛЬ ===
+
+Button.MouseButton1Click:Connect(function()
+    Toggled = not Toggled
+    if Toggled then
+        Button.Text = "Touch Fall: ON"
+        Button.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    else
+        Button.Text = "Touch Fall: OFF"
+        Button.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+    end
+end)
